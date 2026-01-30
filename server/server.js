@@ -2,27 +2,23 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import connectDB from "./config/db.js";
-import { clerkMiddleware } from "@clerk/express";
 import { serve } from "inngest/express";
 import { inngest, functions } from "./inngest/inngest.js";
 
 const app = express();
-
 const port = 3000;
 
-// Middleware
-app.use(clerkMiddleware());
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
-await connectDB();
+// connect DB safely
+connectDB().catch(console.error);
 
-// API Routes
 app.get("/", (req, res) => res.send("Server is live!"));
 
+// Inngest route (NO Clerk here)
 app.use("/api/inngest", serve({ client: inngest, functions }));
 
-
 app.listen(port, () =>
-  console.log(`Server listening at http:/localhost:${port}`),
+  console.log(`Server listening at http://localhost:${port}`),
 );

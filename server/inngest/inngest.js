@@ -1,48 +1,53 @@
-import User from "../models/User.js";
 import { Inngest } from "inngest";
+import User from "../models/User.js";
+import connectDB from "../config/db.js";
 
 export const inngest = new Inngest({ id: "movie-ticket-booking" });
 
-// Inngest Function to save user data to a database
+// CREATE USER
 const syncUserCreation = inngest.createFunction(
   { id: "sync-user-from-clerk" },
   { event: "clerk/user.created" },
   async ({ event }) => {
-    const { id, first_name, last_name, emial_addresses, image_url } =
+    await connectDB();
+
+    const { id, first_name, last_name, email_addresses, image_url } =
       event.data;
-    const userData = {
+
+    await User.create({
       _id: id,
-      email: emial_addresses[0].emial_addresses,
-      name: first_name + " " + last_name,
-      image: image_url,
-    };
-    await User.create(userData);
+      email: email_addresses?.[0]?.email_address || null,
+      name: `${first_name ?? ""} ${last_name ?? ""}`.trim(),
+      image: image_url || null,
+    });
   },
 );
 
-// IngestFuntion to delete user from database
+// DELETE USER
 const syncUserDeletion = inngest.createFunction(
   { id: "delete-user-from-clerk" },
   { event: "clerk/user.deleted" },
   async ({ event }) => {
-    const { id } = event.data;
-    await User.findByIdAndDelete(id);
+    await connectDB();
+    await User.findByIdAndDelete(event.data.id);
   },
 );
-// Inngest Function to update user from database
+
+// UPDATE USER
 const syncUserUpdatation = inngest.createFunction(
   { id: "update-user-from-clerk" },
   { event: "clerk/user.updated" },
   async ({ event }) => {
-    const { id, first_name, last_name, emial_addresses, image_url } =
+    await connectDB();
+
+    const { id, first_name, last_name, email_addresses, image_url } =
       event.data;
-    const userData = {
-      _id: id,
-      email: emial_addresses[0].emial_addresses,
-      name: first_name + " " + last_name,
-      image: image_url,
-    };
-    await User.findByIdAndUpdate(id, userData);
+
+    await User.findByIdAndUpdate(id, {
+      email: email_addresses?.[0]?.email_address || null,
+      name: `${first_name ?? ""} ${last_name ?? ""}`.trim(),
+      image: image_url || null,
+    });
   },
 );
 
