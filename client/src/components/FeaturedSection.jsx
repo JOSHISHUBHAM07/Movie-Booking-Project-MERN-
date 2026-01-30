@@ -5,7 +5,7 @@ import BlueCircle from './BlueCircle';
 import { dummyShowsData } from '../assets/assets';
 import MovieCard from './MovieCard';
 
-function FeaturedSection() {
+const FeaturedSection=()=> {
 
   const navigate=useNavigate();
   return (

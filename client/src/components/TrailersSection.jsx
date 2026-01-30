@@ -4,7 +4,7 @@ import ReactPlayer from "react-player";
 import BlueCircle from "./BlueCircle";
 import { PlayCircleIcon } from "lucide-react";
 
-function TrailersSection() {
+const TrailersSection=()=> {
   const [currentTrailer,setCurrentTrailer] = useState(dummyTrailers[0]);
 
   return (

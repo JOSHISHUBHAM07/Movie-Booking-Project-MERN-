@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
 
-function Navbar() {
+const Navbar=()=> {
   const [isOpen, setisOpen] = useState(false);
   const { user } = useUser();
   const { openSignIn } = useClerk();
